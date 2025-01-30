@@ -4,12 +4,20 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
 from dotenv import load_dotenv
+from flask_cors import CORS  # Import CORS
 
 # Load environment variables
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 app = Flask(__name__)
+
+# Enable CORS for all routes (allow all domains to access the API)
+CORS(app)
+
+# Optionally, you can configure CORS to allow specific origins like:
+# CORS(app, origins=["http://example.com", "http://anotherdomain.com"])
+
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -107,5 +115,6 @@ def upload_file():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
